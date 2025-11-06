@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - FastShip</title>
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="../../index.html" class="text-2xl font-bold text-blue-600">FastShip</a>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <button onclick="goBack()" class="text-gray-600 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-arrow-right mr-2"></i>
+                        العودة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="gradient-bg text-white py-8">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center space-x-6 space-x-reverse">
+                <div class="relative">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl text-blue-600">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <button class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-camera text-xs"></i>
+                    </button>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold mb-2" id="displayName">جاري التحميل...</h1>
+                    <p class="text-blue-100 mb-1" id="displayEmail">جاري التحميل...</p>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="displayAccountType">جاري التحميل...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Profile Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">معلومات الحساب</h2>
+                    
+                    <form id="profileForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل</label>
+                                <input type="text" id="fullName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="أدخل اسمك الكامل">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                                <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+966 5X XXX XXXX">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
+                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">نوع الحساب</label>
+                            <select id="accountType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="shipper">صاحب شحنات</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">نبذة شخصية</label>
+                            <textarea id="bio" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="اكتب نبذة مختصرة عنك..."></textarea>
+                        </div>
+                        
+                        <div class="flex space-x-4 space-x-reverse">
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i>
+                                حفظ التغييرات
+                            </button>
+                            <button type="button" onclick="resetForm()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                                <i class="fas fa-undo mr-2"></i>
+                                إلغاء
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Change Password Section -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">تغيير كلمة المرور</h2>
+                    
+                    <form id="passwordForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">كلمة المرور الحالية</label>
+                            <input type="password" id="currentPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">كلمة المرور الجديدة</label>
+                            <input type="password" id="newPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">تأكيد كلمة المرور الجديدة</label>
+                            <input type="password" id="confirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-key mr-2"></i>
+                            تغيير كلمة المرور
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Account Stats -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">إحصائيات الحساب</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">الشحنات المكتملة</span>
+                            <span class="font-bold text-green-600" id="completedShipments">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">التقييم</span>
+                            <div class="flex items-center">
+                                <span class="font-bold text-yellow-500 mr-1" id="userRating">5.0</span>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">تاريخ الانضمام</span>
+                            <span class="font-bold text-blue-600" id="joinDate">...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">إجراءات سريعة</h3>
+                    <div class="space-y-3">
+                        <button onclick="goToDashboard()" class="w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors text-center">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            لوحة التحكم
+                        </button>
+                        <button onclick="logout()" class="w-full bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config/supabase.js"></script>
+    <script src="../../assets/js/session-manager.js"></script>
+    
+    <script>
+        let originalData = {};
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await sessionManager.init();
+            
+            if (!sessionManager.isLoggedIn()) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+            
+            await loadUserProfile();
+        });
+
+        // Load user profile data
+        async function loadUserProfile() {
+            try {
+                const user = sessionManager.getCurrentUser();
+                if (!user) return;
+
+                // Update header display
+                document.getElementById('displayName').textContent = user.user_metadata?.full_name || user.email;
+                document.getElementById('displayEmail').textContent = user.email;
+                
+                const accountType = user.user_metadata?.account_type || 'shipper';
+                document.getElementById('displayAccountType').textContent = 
+                    accountType === 'shipper' ? 'صاحب شحنات' : 'ناقل / مسافر';
+
+                // Fill form fields
+                document.getElementById('fullName').value = user.user_metadata?.full_name || '';
+                document.getElementById('phone').value = user.user_metadata?.phone || '';
+                document.getElementById('email').value = user.email;
+                document.getElementById('accountType').value = accountType;
+                document.getElementById('bio').value = user.user_metadata?.bio || '';
+
+                // Store original data
+                originalData = {
+                    fullName: user.user_metadata?.full_name || '',
+                    phone: user.user_metadata?.phone || '',
+                    accountType: accountType,
+                    bio: user.user_metadata?.bio || ''
+                };
+
+                // Load additional user data from database
+                const { data: userData, error } = await supabaseClient
+                    .from('users')
+                    .select('created_at')
+                    .eq('auth_user_id', user.id)
+                    .single();
+
+                if (userData && userData.created_at) {
+                    const joinDate = new Date(userData.created_at).toLocaleDateString('ar-SA');
+                    document.getElementById('joinDate').textContent = joinDate;
+                }
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showMessage('حدث خطأ في تحميل البيانات', 'error');
+            }
+        }
+
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                accountType: document.getElementById('accountType').value,
+                bio: document.getElementById('bio').value
+            };
+
+            try {
+                const { data, error } = await supabaseClient.auth.updateUser({
+                    data: {
+                        full_name: formData.fullName,
+                        phone: formData.phone,
+                        account_type: formData.accountType,
+                        bio: formData.bio
+                    }
+                });
+
+                if (error) throw error;
+
+                // Update database record
+                const user = sessionManager.getCurrentUser();
+                if (user) {
+                    await supabaseClient
+                        .from('users')
+                        .update({
+                            full_name: formData.fullName,
+                            phone: formData.phone,
+                            user_type: formData.accountType
+                        })
+                        .eq('auth_user_id', user.id);
+                }
+
+                showMessage('تم حفظ التغييرات بنجاح', 'success');
+                await loadUserProfile(); // Reload to show updated data
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showMessage('حدث خطأ في حفظ التغييرات', 'error');
+            }
+        });
+
+        // Handle password change
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showMessage('كلمة المرور الجديدة غير متطابقة', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                showMessage('تم تغيير كلمة المرور بنجاح', 'success');
+                document.getElementById('passwordForm').reset();
+
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showMessage('حدث خطأ في تغيير كلمة المرور', 'error');
+            }
+        });
+
+        // Reset form to original values
+        function resetForm() {
+            document.getElementById('fullName').value = originalData.fullName;
+            document.getElementById('phone').value = originalData.phone;
+            document.getElementById('accountType').value = originalData.accountType;
+            document.getElementById('bio').value = originalData.bio;
+        }
+
+        // Navigation functions
+        function goBack() {
+            window.history.back();
+        }
+
+        function goToDashboard() {
+            sessionManager.goToDashboard();
+        }
+
+        async function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                await sessionManager.logout();
+            }
+        }
+
+        // Show success/error messages
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageEl = document.createElement('div');
+            messageEl.className = `p-4 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white mb-4`;
+            messageEl.textContent = message;
+            
+            container.appendChild(messageEl);
+            
+            setTimeout(() => {
+                messageEl.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة شحنة جديدة - الشاحن | FastShip</title>
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    <script src="/config/supabase.js"></script>
+    <script src="/assets/js/session-manager.js"></script>
+</head>
+<body class="bg-gradient min-h-screen flex items-center justify-center p-4">
+    <div class="glass-card p-8 w-full max-w-2xl shadow-lg">
+        <h1 class="text-2xl font-bold text-white mb-6 text-center">
+            <i class="fas fa-plus mr-2"></i>إضافة شحنة جديدة
+        </h1>
+        <form id="addShipmentForm" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-white mb-1">بلد الاستلام</label>
+                    <input type="text" id="pickup_country" required class="form-input w-full rounded-lg" placeholder="مثال: السعودية">
+                </div>
+                <div>
+                    <label class="block text-white mb-1">مدينة الاستلام</label>
+                    <input type="text" id="pickup_city" required class="form-input w-full rounded-lg" placeholder="مثال: الرياض">
+                </div>
+                <div>
+                    <label class="block text-white mb-1">بلد التوصيل</label>
+                    <input type="text" id="delivery_country" required class="form-input w-full rounded-lg" placeholder="مثال: الإمارات">
+                </div>
+                <div>
+                    <label class="block text-white mb-1">مدينة التوصيل</label>
+                    <input type="text" id="delivery_city" required class="form-input w-full rounded-lg" placeholder="مثال: دبي">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-white mb-1">تاريخ الاستلام</label>
+                    <input type="date" id="pickup_date" required class="form-input w-full rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-white mb-1">وزن الشحنة (كجم)</label>
+                    <input type="number" id="weight_kg" required min="1" class="form-input w-full rounded-lg" placeholder="مثال: 50">
+                </div>
+            </div>
+            <div>
+                <label class="block text-white mb-1">نوع البضاعة</label>
+                <input type="text" id="cargo_type" required class="form-input w-full rounded-lg" placeholder="مثال: إلكترونيات، ملابس...">
+            </div>
+            <div>
+                <label class="block text-white mb-1">ملاحظات إضافية</label>
+                <textarea id="description" class="form-input w-full rounded-lg" rows="2" placeholder="أي تفاصيل إضافية..."></textarea>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold text-lg flex items-center justify-center gap-2">
+                <i class="fas fa-paper-plane"></i> حفظ الشحنة
+            </button>
+        </form>
+        <div id="statusMsg" class="mt-4 text-center text-white font-bold"></div>
+        <div class="mt-6 text-center">
+            <a href="/pages/shipper/index.html" class="text-blue-200 hover:text-white text-sm">
+                <i class="fas fa-arrow-right ml-1"></i> العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+    <script src="/config/supabase.js"></script>
+    <script src="/assets/js/session-manager.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        await window.sessionManager.init();
+        
+        // Check user authentication and type
+        if (!window.sessionManager.requireUserType('shipper')) {
+            return; // Will redirect automatically
+        }
+        
+        const user = window.sessionManager.getCurrentUser();
+        if (!user) {
+            alert('يرجى تسجيل الدخول أولاً');
+            window.location.href = '/pages/auth/login-final.html';
+            return;
+        }
+        const form = document.getElementById('addShipmentForm');
+        const statusMsg = document.getElementById('statusMsg');
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            statusMsg.textContent = 'جاري الحفظ...';
+            statusMsg.className = 'mt-4 text-center text-yellow-200 font-bold';
+            
+            // Get form data
+            const pickupDate = new Date(form.pickup_date.value);
+            if (pickupDate < new Date()) {
+                statusMsg.textContent = '❌ يرجى اختيار تاريخ مستقبلي للاستلام';
+                statusMsg.className = 'mt-4 text-center text-red-200 font-bold';
+                return;
+            }
+            
+            const shipment = {
+                shipper_id: user.id, // Use auth user ID, not profile ID
+                pickup_country: form.pickup_country.value.trim(),
+                pickup_city: form.pickup_city.value.trim(),
+                delivery_country: form.delivery_country.value.trim(),
+                delivery_city: form.delivery_city.value.trim(),
+                pickup_date: form.pickup_date.value,
+                weight_kg: parseFloat(form.weight_kg.value),
+                cargo_type: form.cargo_type.value.trim(),
+                description: form.description.value.trim() || null,
+                status: 'active',
+                created_at: new Date().toISOString()
+            };
+            
+            try {
+                console.log('Submitting shipment:', shipment);
+                const { data, error } = await window.supabaseClient
+                    .from('shipments')
+                    .insert([shipment]);
+                    
+                if (error) {
+                    console.error('Database error:', error);
+                    throw error;
+                }
+                
+                console.log('Shipment saved successfully:', data);
+                statusMsg.textContent = '✅ تم حفظ الشحنة بنجاح!';
+                statusMsg.className = 'mt-4 text-center text-green-200 font-bold';
+                form.reset();
+                
+                // Optional: redirect to shipments list after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/pages/shipper/dashboard.html';
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Error saving shipment:', err);
+                statusMsg.textContent = '❌ حدث خطأ أثناء حفظ الشحنة: ' + (err.message || 'خطأ غير معروف');
+                statusMsg.className = 'mt-4 text-center text-red-200 font-bold';
+            }
+        };
+    });
+    </script>
+</body>
+</html>
