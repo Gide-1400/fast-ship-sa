@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastShip - الناقل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config/supabase.js"></script>
+    <script src="/assets/js/session-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin: 1rem;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin: 1rem;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 class="text-3xl font-bold text-white mb-4">FastShip - الناقل</h1>
+        <p class="text-white/80 mb-8">منصة الشحن الذكية لربط الناقلين بأصحاب الشحنات</p>
+        
+        <div class="flex flex-col gap-4">
+            <a href="dashboard.html" class="btn-primary">
+                <i class="fas fa-tachometer-alt ml-2"></i>الذهاب إلى لوحة التحكم
+            </a>
+            <a href="login.html" class="btn-outline">
+                <i class="fas fa-sign-in-alt ml-2"></i>تسجيل الدخول
+            </a>
+            <a href="register.html" class="btn-outline">
+                <i class="fas fa-user-plus ml-2"></i>إنشاء حساب جديد
+            </a>
+            <a href="../index.html" class="text-white/80 hover:text-white mt-4">
+                <i class="fas fa-home ml-2"></i>الصفحة الرئيسية
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await sessionManager.init();
+            
+            // If user is already logged in, redirect to dashboard
+            if (sessionManager.isLoggedIn()) {
+                const userType = sessionManager.getUserType();
+                if (userType === 'carrier') {
+                    window.location.href = 'dashboard.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

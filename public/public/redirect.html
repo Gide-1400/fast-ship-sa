@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastShip - جاري التوجيه...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config/supabase.js"></script>
+    <script src="/assets/js/session-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 class="text-3xl font-bold text-white mb-4">جاري التوجيه...</h1>
+        <p class="text-white/80 mb-8">يتم الآن توجيهك إلى التطبيق المناسب</p>
+        <div class="text-5xl text-white mb-4">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p class="text-white/60 text-sm">إذا لم يتم التوجيه تلقائياً، <a href="index.html" class="text-white underline">انقر هنا</a></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await sessionManager.init();
+            
+            // If user is already logged in, redirect to appropriate dashboard
+            if (sessionManager.isLoggedIn()) {
+                const userType = sessionManager.getUserType();
+                if (userType === 'shipper') {
+                    window.location.href = 'shipper-app/dashboard.html';
+                } else if (userType === 'carrier') {
+                    window.location.href = 'carrier-app/dashboard.html';
+                } else {
+                    // Default to shipper if user type is not set
+                    window.location.href = 'shipper-app/dashboard.html';
+                }
+            } else {
+                // If not logged in, go to the main page
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

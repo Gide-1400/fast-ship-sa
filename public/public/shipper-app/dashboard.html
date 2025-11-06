@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - صاحب الشحنات | FastShip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config/supabase.js"></script>
+    <script src="../assets/js/session-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="../index.html" class="text-2xl font-bold">FastShip</a>
+                    <span class="text-white/80">|</span>
+                    <span class="text-white/90">لوحة تحكم الشاحن</span>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="../index.html" class="text-white/90 hover:text-white">
+                        <i class="fas fa-home ml-2"></i>الصفحة الرئيسية
+                    </a>
+                    <button onclick="logout()" class="text-white/90 hover:text-white">
+                        <i class="fas fa-sign-out-alt ml-2"></i>تسجيل الخروج
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">مرحبا بك <span id="userName">صاحب الشحنات</span>! 👋</h1>
+            <p class="text-gray-600">إدارة شحناتك والبحث عن أفضل الناقلين</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/80 text-sm">الشحنات النشطة</p>
+                        <p class="text-3xl font-bold" id="activeShipments">0</p>
+                    </div>
+                    <div class="text-3xl">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/80 text-sm">الشحنات المكتملة</p>
+                        <p class="text-3xl font-bold" id="completedShipments">0</p>
+                    </div>
+                    <div class="text-3xl">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/80 text-sm">الرسائل الجديدة</p>
+                        <p class="text-3xl font-bold" id="newMessages">0</p>
+                    </div>
+                    <div class="text-3xl">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/80 text-sm">التوفير الإجمالي</p>
+                        <p class="text-3xl font-bold" id="totalSavings">0 ريال</p>
+                    </div>
+                    <div class="text-3xl">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6 lg:col-span-2">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">إجراءات سريعة</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="addShipment()" class="btn-primary py-4">
+                        <i class="fas fa-plus text-2xl mb-2"></i>
+                        <span class="block">إضافة شحنة</span>
+                    </button>
+                    <button onclick="smartMatch()" class="btn-outline py-4">
+                        <i class="fas fa-magic text-2xl mb-2"></i>
+                        <span class="block">بحث ذكي</span>
+                    </button>
+                    <button onclick="viewMessages()" class="btn-outline py-4">
+                        <i class="fas fa-comments text-2xl mb-2"></i>
+                        <span class="block">الرسائل</span>
+                        <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full mt-1" id="messagesCount">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">التنبيهات</h2>
+                <div id="notificationsList" class="space-y-3">
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-bell-slash text-3xl mb-2"></i>
+                        <p>لا توجد تنبيهات</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Shipments -->
+        <div class="card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">الشحنات الأخيرة</h2>
+                <button onclick="viewAllShipments()" class="text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left ml-2"></i>عرض الكل
+                </button>
+            </div>
+            <div id="recentShipments" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-box-open text-3xl mb-2"></i>
+                    <p>لا توجد شحنات</p>
+                    <button onclick="addShipment()" class="btn-primary mt-4">
+                        <i class="fas fa-plus ml-2"></i>إضافة شحنة جديدة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize session manager
+            if (window.sessionManager) {
+                await window.sessionManager.init();
+
+                if (!window.sessionManager.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userType = window.sessionManager.getUserType();
+                if (userType !== 'shipper') {
+                    alert('هذه الصفحة مخصصة لأصحاب الشحنات فقط');
+                    window.sessionManager.goToDashboard();
+                    return;
+                }
+
+                loadUserInfo();
+                loadDashboardData();
+            }
+        });
+
+        function loadUserInfo() {
+            const user = window.sessionManager.getCurrentUser();
+            if (user) {
+                const displayName = user.profile?.full_name || user.email?.split('@')[0] || 'المستخدم';
+                document.getElementById('userName').textContent = displayName;
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                await loadStats();
+                await loadRecentShipments();
+                await loadNotifications();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const user = window.sessionManager.getCurrentUser();
+                if (!user) return;
+
+                // First get the shipper ID
+                const { data: shipperData, error: shipperError } = await window.supabaseClient
+                    .from('shippers')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (shipperError) throw shipperError;
+                if (!shipperData) throw new Error('لم يتم العثور على معلومات الشاحن');
+
+                // Load shipment stats using the shipper ID
+                const { data: shipments, error } = await window.supabaseClient
+                    .from('shipments')
+                    .select('status')
+                    .eq('shipper_id', shipperData.id);
+
+                if (error) throw error;
+
+                const active = shipments?.filter(s => s.status === 'pending' || s.status === 'matched' || s.status === 'in_transit').length || 0;
+                const completed = shipments?.filter(s => s.status === 'delivered').length || 0;
+
+                document.getElementById('activeShipments').textContent = active;
+                document.getElementById('completedShipments').textContent = completed;
+                document.getElementById('newMessages').textContent = '0';
+                document.getElementById('totalSavings').textContent = '0 ريال';
+
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadRecentShipments() {
+            try {
+                const user = window.sessionManager.getCurrentUser();
+                if (!user) return;
+
+                // First get the shipper ID
+                const { data: shipperData, error: shipperError } = await window.supabaseClient
+                    .from('shippers')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (shipperError) throw shipperError;
+                if (!shipperData) throw new Error('لم يتم العثور على معلومات الشاحن');
+
+                const { data: shipments, error } = await window.supabaseClient
+                    .from('shipments')
+                    .select('*')
+                    .eq('shipper_id', shipperData.id)
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (error) throw error;
+
+                displayRecentShipments(shipments);
+            } catch (error) {
+                console.error('Error loading shipments:', error);
+            }
+        }
+
+        function displayRecentShipments(shipments) {
+            const container = document.getElementById('recentShipments');
+
+            if (!shipments || shipments.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-3xl mb-2"></i>
+                        <p>لا توجد شحنات</p>
+                        <button onclick="addShipment()" class="btn-primary mt-4">
+                            <i class="fas fa-plus ml-2"></i>إضافة شحنة جديدة
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = shipments.map(shipment => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-gray-800">${shipment.title || 'شحنة'}</h3>
+                            <p class="text-gray-600 text-sm mt-1">
+                                <i class="fas fa-map-marker-alt ml-1"></i>
+                                من ${shipment.pickup_location || 'غير محدد'} إلى ${shipment.delivery_location || 'غير محدد'}
+                            </p>
+                            <p class="text-gray-500 text-sm mt-1">
+                                <i class="fas fa-weight-hanging ml-1"></i>
+                                ${shipment.weight || 0} كجم
+                            </p>
+                        </div>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                            ${getStatusText(shipment.status)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'في الانتظار',
+                'active': 'نشط',
+                'completed': 'مكتمل',
+                'cancelled': 'ملغي'
+            };
+            return statusMap[status] || status;
+        }
+
+        async function loadNotifications() {
+            try {
+                const user = window.sessionManager.getCurrentUser();
+                if (!user) return;
+
+                const { data: notifications, error } = await window.supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (error) throw error;
+
+                displayNotifications(notifications);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-bell-slash text-3xl mb-2"></i>
+                        <p>لا توجد تنبيهات</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = notifications.map(notification => `
+                <div class="border-b border-gray-200 pb-3 last:border-0 last:pb-0">
+                    <p class="text-gray-800 font-medium">${notification.title}</p>
+                    <p class="text-gray-600 text-sm">${notification.message}</p>
+                    <p class="text-gray-500 text-xs mt-1">
+                        ${notification.created_at ? new Date(notification.created_at).toLocaleDateString('ar-SA') : ''}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        // Action functions
+        function addShipment() {
+            window.location.href = 'add-shipment.html';
+        }
+
+        function smartMatch() {
+            alert('جاري البحث الذكي عن أفضل ناقل لشحنتك...');
+            // TODO: Implement smart matching
+        }
+
+        function viewMessages() {
+            window.location.href = 'messages.html';
+        }
+
+        function viewAllShipments() {
+            window.location.href = 'shipments.html';
+        }
+
+        async function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                if (window.sessionManager) {
+                    await window.sessionManager.logout();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

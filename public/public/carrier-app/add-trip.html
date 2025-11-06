@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة رحلة جديدة - الناقل | FastShip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config/supabase.js"></script>
+    <script src="/assets/js/session-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="index.html" class="text-2xl font-bold">FastShip</a>
+                    <span class="text-white/80">|</span>
+                    <span class="text-white/90">إضافة رحلة جديدة</span>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="index.html" class="text-white/90 hover:text-white">
+                        <i class="fas fa-arrow-right ml-2"></i>العودة للوحة التحكم
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="card p-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">إضافة رحلة جديدة</h1>
+                <p class="text-gray-600 mb-8">قم بإدخال تفاصيل رحلتك لعرضها للشاحنين</p>
+
+                <form id="addTripForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="form-label">عنوان الرحلة</label>
+                            <input type="text" id="tripTitle" class="form-control" placeholder="مثال: رحلة من الرياض إلى جدة" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">تاريخ السفر</label>
+                            <input type="date" id="travelDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">مدينة البداية</label>
+                            <input type="text" id="origin" class="form-control" placeholder="مثال: الرياض" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">مدينة الوجهة</label>
+                            <input type="text" id="destination" class="form-control" placeholder="مثال: جدة" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">السعة المتاحة (كجم)</label>
+                            <input type="number" id="capacity" class="form-control" placeholder="مثال: 50" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">السعر المطلوب (ريال)</label>
+                            <input type="number" id="price" class="form-control" placeholder="مثال: 200" min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">وصف الرحلة</label>
+                        <textarea id="description" class="form-control" rows="4" placeholder="أضف تفاصيل إضافية عن رحلتك..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">الشروط الخاصة (إن وجدت)</label>
+                        <textarea id="terms" class="form-control" rows="3" placeholder="أي شروط خاصة للشاحنين..."></textarea>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                        <button type="submit" class="btn-primary flex-1">
+                            <i class="fas fa-save ml-2"></i>حفظ الرحلة
+                        </button>
+                        <button type="button" onclick="window.location.href='trips.html'" class="btn-outline flex-1">
+                            <i class="fas fa-times ml-2"></i>إلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await sessionManager.init();
+
+            if (!sessionManager.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userType = sessionManager.getUserType();
+            if (userType !== 'carrier') {
+                alert('هذه الصفحة مخصصة للناقلين فقط');
+                window.sessionManager.goToDashboard();
+                return;
+            }
+
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('travelDate').min = today;
+            document.getElementById('travelDate').value = today;
+        });
+
+        document.getElementById('addTripForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>جاري الحفظ...';
+            submitBtn.disabled = true;
+
+            try {
+                const user = sessionManager.getCurrentUser();
+                if (!user) {
+                    throw new Error('يرجى تسجيل الدخول أولاً');
+                }
+
+                // Get the carrier ID from the carriers table
+                const { data: carrierData, error: carrierError } = await window.supabaseClient
+                    .from('carriers')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                    
+                if (carrierError) {
+                    console.error('Carrier lookup error:', carrierError);
+                    throw new Error('لم يتم العثور على معلومات الناقل. يرجى التأكد من أن حسابك مسجل كناقل.');
+                }
+                
+                if (!carrierData) {
+                    throw new Error('لم يتم العثور على معلومات الناقل. يرجى التأكد من أن حسابك مسجل كناقل.');
+                }
+
+                const tripData = {
+                    title: document.getElementById('tripTitle').value,
+                    travel_date: document.getElementById('travelDate').value,
+                    origin: document.getElementById('origin').value,
+                    destination: document.getElementById('destination').value,
+                    capacity: parseFloat(document.getElementById('capacity').value),
+                    price: document.getElementById('price').value ? parseFloat(document.getElementById('price').value) : null,
+                    description: document.getElementById('description').value,
+                    terms: document.getElementById('terms').value,
+                    carrier_id: carrierData.id, // Use the carrier ID from the carriers table
+                    status: 'pending'
+                };
+
+                const { data, error } = await window.supabaseClient
+                    .from('trips')
+                    .insert([tripData])
+                    .select();
+
+                if (error) throw error;
+
+                alert('تمت إضافة الرحلة بنجاح!');
+                window.location.href = 'trips.html';
+
+            } catch (error) {
+                console.error('Error adding trip:', error);
+                alert('حدث خطأ أثناء إضافة الرحلة: ' + (error.message || 'خطأ غير معروف'));
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
